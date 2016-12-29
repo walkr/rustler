@@ -19,6 +19,7 @@ pub type NIF_ENV = *mut erlang_nif_sys::ErlNifEnv;
 pub type NIF_TERM = size_t;
 pub type NIF_BINARY = *mut erlang_nif_sys::ErlNifBinary;
 pub type NIF_RESOURCE_TYPE = *const erlang_nif_sys::ErlNifResourceType;
+pub type NIF_PID = *mut erlang_nif_sys::ErlNifPid;
 
 pub type NIF_RESOURCE_HANDLE = *const c_void;
 pub type MUTABLE_NIF_RESOURCE_HANDLE = *mut c_void;
@@ -47,14 +48,23 @@ pub unsafe fn enif_make_badarg(env: NIF_ENV) -> NIF_TERM {
     erlang_nif_sys::enif_make_badarg(env)
 }
 
-pub unsafe fn enif_alloc_env() -> NIF_ENV {
-    erlang_nif_sys::enif_alloc_env()
-}
-
 pub unsafe fn enif_raise_exception(env: NIF_ENV, reason: NIF_TERM) -> NIF_TERM {
     erlang_nif_sys::enif_raise_exception(env, reason)
 }
 
+// Environments
+pub unsafe fn enif_alloc_env() -> NIF_ENV {
+    erlang_nif_sys::enif_alloc_env()
+}
+pub unsafe fn enif_free_env(env: NIF_ENV) {
+    erlang_nif_sys::enif_free_env(env);
+}
+pub unsafe fn enif_send(caller_env: NIF_ENV, to_pid: NIF_PID, msg_env: NIF_ENV, msg: NIF_TERM) -> c_int {
+    erlang_nif_sys::enif_send(caller_env, to_pid, msg_env, msg)
+}
+pub unsafe fn enif_self(caller_env: NIF_ENV, pid: NIF_PID) -> NIF_PID {
+    erlang_nif_sys::enif_self(caller_env, pid)
+}
 pub unsafe fn enif_make_copy(dest_env: NIF_ENV, source_term: NIF_TERM) -> NIF_TERM {
     erlang_nif_sys::enif_make_copy(dest_env, source_term)
 }

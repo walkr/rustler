@@ -14,7 +14,7 @@ macro_rules! impl_number_transcoder {
         impl NifEncoder for $dec_type {
             fn encode<'a>(&self, env: &'a NifEnv) -> NifTerm<'a> {
                 #![allow(unused_unsafe)]
-                NifTerm::new(env, unsafe { erlang_nif_sys::$encode_fun(env.env, *self as $nif_type) })
+                NifTerm::new(env, unsafe { erlang_nif_sys::$encode_fun(env.as_c_arg(), *self as $nif_type) })
             }
         }
         impl<'a> NifDecoder<'a> for $dec_type {

@@ -15,8 +15,8 @@ pub fn map_new<'a>(env: &'a NifEnv) -> NifTerm<'a> {
 }
 
 pub fn map_put<'a>(map: NifTerm<'a>, key: NifTerm, value: NifTerm) -> Option<NifTerm<'a>> {
-    assert!(map.env == key.env, "key is from different environment as map");
-    assert!(map.env == value.env, "value is from different environment as map");
+    assert!(map.env.env_eq(key.env), "key is from different environment as map");
+    assert!(map.env.env_eq(value.env), "value is from different environment as map");
     match map::map_put(map.env.as_c_arg(), map.as_c_arg(), key.as_c_arg(), value.as_c_arg()) {
         Some(inner) => Some(NifTerm::new(map.env, inner)),
         None => None

@@ -1,6 +1,6 @@
 //! Functions used by runtime generated code. Should not be used.
 
-use ::{NifEnv, NifTerm};
+use ::{NifEnv, CallerEnv, NifTerm};
 use ::atom::get_atom_init;
 use ::wrapper::nif_interface::{MUTABLE_NIF_RESOURCE_HANDLE, NIF_ENV, NIF_TERM};
 use std::panic::catch_unwind;
@@ -16,12 +16,12 @@ pub use ::wrapper::nif_interface::{c_int, c_void};
 pub fn handle_nif_call(function: for<'a> fn(&'a NifEnv, &Vec<NifTerm>) -> NifResult<NifTerm<'a>>,
                        _arity: usize, r_env: NIF_ENV,
                        argc: c_int, argv: *const NIF_TERM) -> NIF_TERM {
-    let env = NifEnv { env: r_env };
-
-    let terms = unsafe { ::std::slice::from_raw_parts(argv, argc as usize) }.iter()
-        .map(|x| NifTerm::new(&env, *x)).collect::<Vec<NifTerm>>();
+    let env = unsafe { CallerEnv::new(r_env) };
 
     let result: ::std::thread::Result<NIF_TERM> = catch_unwind(|| {
+        let terms = unsafe { ::std::slice::from_raw_parts(argv, argc as usize) }.iter()
+            .map(|x| NifTerm::new(&env, *x)).collect::<Vec<NifTerm>>();
+
         match function(&env, &terms) {
             Ok(ret) => ret.as_c_arg(),
             Err(err) => err.encode(&env).as_c_arg(),
@@ -40,7 +40,7 @@ pub fn handle_nif_call(function: for<'a> fn(&'a NifEnv, &Vec<NifTerm>) -> NifRes
 pub fn handle_nif_init_call(function: Option<for<'a> fn(&'a NifEnv, NifTerm) -> bool>,
                             r_env: NIF_ENV,
                             load_info: NIF_TERM) -> c_int {
-    let env = NifEnv { env: r_env };
+    let env = unsafe { CallerEnv::new(r_env) };
     let term = NifTerm::new(&env, load_info);
 
     if let Some(inner) = function {
