@@ -23,12 +23,15 @@
 //! rustler_mix](https://hexdocs.pm/rustler/basics.html).
 
 pub mod wrapper;
-use wrapper::nif_interface::{NIF_ENV, NIF_TERM, enif_make_badarg, enif_make_atom_len};
+use wrapper::nif_interface::{NIF_TERM, enif_make_badarg, enif_make_atom_len};
 pub use wrapper::nif_interface::size_t;
 pub use wrapper::nif_interface::ErlNifTaskFlags;
 
 #[macro_use]
 extern crate lazy_static;
+
+mod env;
+pub use self::env::{ NifEnv, OwnedEnv, CallerEnv };
 
 mod types;
 pub use self::types::{ NifEncoder, NifDecoder };
@@ -46,19 +49,6 @@ mod export;
 
 pub type NifResult<T> = Result<T, NifError>;
 
-/// On each NIF call, a NifEnv is passed in. The NifEnv is used for most operations that involve
-/// communicating with the BEAM, like decoding and encoding terms.
-///
-/// There is no way to allocate a NifEnv at the moment, but this may be possible in the future.
-#[derive(PartialEq)]
-pub struct NifEnv {
-    env: NIF_ENV,
-}
-impl NifEnv {
-    pub fn as_c_arg(&self) -> NIF_ENV {
-        self.env
-    }
-}
 
 /// Represents usual errors that can happen in a nif. This enables you to return an error from
 /// anywhere, even places where you don't have an NifEnv availible.
@@ -127,7 +117,7 @@ impl<'a> NifTerm<'a> {
     /// If the term is already is in the provided env, it will be directly returned. Otherwise
     /// the term will be copied over.
     pub fn in_env<'b>(&self, env: &'b NifEnv) -> NifTerm<'b> {
-        if self.get_env() == env {
+        if self.get_env().env_eq(env) {
             unsafe { self.env_cast(env) }
         } else {
             NifTerm::new(env, wrapper::copy_term(env.as_c_arg(), self.as_c_arg()))
