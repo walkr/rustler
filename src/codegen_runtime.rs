@@ -13,7 +13,7 @@ pub use ::wrapper::nif_interface::{c_int, c_void};
 
 // This is the last level of rust safe rust code before the BEAM.
 // No panics should go above this point, as they will unwrap into the C code and ruin the day.
-pub fn handle_nif_call(function: for<'a> fn(&'a NifEnv, &Vec<NifTerm>) -> NifResult<NifTerm<'a>>,
+pub fn handle_nif_call(function: for<'a> fn(&'a CallerEnv, &Vec<NifTerm>) -> NifResult<NifTerm<'a>>,
                        _arity: usize, r_env: NIF_ENV,
                        argc: c_int, argv: *const NIF_TERM) -> NIF_TERM {
     let env = unsafe { CallerEnv::new(r_env) };
@@ -37,7 +37,7 @@ pub fn handle_nif_call(function: for<'a> fn(&'a NifEnv, &Vec<NifTerm>) -> NifRes
     }
 }
 
-pub fn handle_nif_init_call(function: Option<for<'a> fn(&'a NifEnv, NifTerm) -> bool>,
+pub fn handle_nif_init_call(function: Option<for<'a> fn(&'a CallerEnv, NifTerm) -> bool>,
                             r_env: NIF_ENV,
                             load_info: NIF_TERM) -> c_int {
     let env = unsafe { CallerEnv::new(r_env) };
@@ -51,7 +51,6 @@ pub fn handle_nif_init_call(function: Option<for<'a> fn(&'a NifEnv, NifTerm) -> 
 }
 
 
-use std::sync::RwLock;
 use std;
 use ::resource::align_alloced_mem_for_struct;
 pub unsafe fn handle_drop_resource_struct_handle<T: NifResourceTypeProvider>(_env: NIF_ENV, handle: MUTABLE_NIF_RESOURCE_HANDLE) {

@@ -1,3 +1,4 @@
+use ::{NifEncoder, NifTerm};
 use wrapper::nif_interface::{NIF_ENV};
 use wrapper;
 

@@ -1,5 +1,5 @@
 use rustler::NifEncoder;
-use rustler::{NifEnv, NifTerm, NifResult};
+use rustler::{NifEnv, CallerEnv, NifTerm, NifResult};
 use rustler::resource::ResourceCell;
 use std::sync::RwLock;
 
@@ -12,7 +12,7 @@ pub fn on_load(env: &NifEnv) -> bool {
     true
 }
 
-pub fn resource_make<'a>(env: &'a NifEnv, _args: &Vec<NifTerm>) -> NifResult<NifTerm<'a>> {
+pub fn resource_make<'a>(env: &'a CallerEnv, _args: &Vec<NifTerm>) -> NifResult<NifTerm<'a>> {
     let data = TestResource {
         test_field: RwLock::new(0),
     };
@@ -21,7 +21,7 @@ pub fn resource_make<'a>(env: &'a NifEnv, _args: &Vec<NifTerm>) -> NifResult<Nif
     Ok(resource.encode(env))
 }
 
-pub fn resource_set_integer_field<'a>(env: &'a NifEnv, args: &Vec<NifTerm>) -> NifResult<NifTerm<'a>> {
+pub fn resource_set_integer_field<'a>(env: &'a CallerEnv, args: &Vec<NifTerm>) -> NifResult<NifTerm<'a>> {
     let resource: ResourceCell<TestResource> = try!(args[0].decode());
     let mut test_field = resource.test_field.write().unwrap();
     *test_field = try!(args[1].decode());
@@ -29,7 +29,7 @@ pub fn resource_set_integer_field<'a>(env: &'a NifEnv, args: &Vec<NifTerm>) -> N
     Ok("ok".encode(env))
 }
 
-pub fn resource_get_integer_field<'a>(env: &'a NifEnv, args: &Vec<NifTerm>) ->  NifResult<NifTerm<'a>> {
+pub fn resource_get_integer_field<'a>(env: &'a CallerEnv, args: &Vec<NifTerm>) ->  NifResult<NifTerm<'a>> {
     let resource: ResourceCell<TestResource> = try!(args[0].decode());
     let test_field = resource.test_field.read().unwrap();
     Ok(test_field.encode(env))

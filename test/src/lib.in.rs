@@ -1,4 +1,4 @@
-use rustler::{NifEnv, NifTerm};
+use rustler::{CallerEnv, NifTerm};
 
 mod test_primitives;
 use test_primitives::{add_u32, add_i32, tuple_add, echo_u8};
@@ -28,7 +28,7 @@ rustler_export_nifs!(
     Some(on_load)
 );
 
-fn on_load(env: &NifEnv, _load_info: NifTerm) -> bool {
+fn on_load(env: &CallerEnv, _load_info: NifTerm) -> bool {
     resource_on_load(env);
     true
 }
