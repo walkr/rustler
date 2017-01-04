@@ -172,3 +172,12 @@ impl<'a> NifTerm<'a> {
     }
 
 }
+
+impl NifEnv {
+
+    /// Returns a term representing an empty list.
+    pub fn list_empty<'a>(&'a self) -> NifTerm<'a> {
+        NifTerm::new(self, list::make_list(self.as_c_arg(), &[]))
+    }
+
+}

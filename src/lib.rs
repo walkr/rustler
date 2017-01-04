@@ -44,6 +44,8 @@ pub mod tuple;
 pub mod map;
 pub mod list;
 pub mod atom;
+pub mod specific_transcode;
+pub use specific_transcode::{ SpecificEncode, SpecificDecode };
 
 pub mod ex_struct;
 pub mod dynamic;

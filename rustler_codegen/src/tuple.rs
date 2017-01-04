@@ -46,7 +46,7 @@ pub fn gen_decoder(struct_name: &Ident, fields: &Vec<Field>, is_tuple: bool, has
 
     // The implementation itself
     quote! {
-        impl<'a> rustler::NifDecoder<'a> for #struct_typ {
+        impl<'a> rustler::SpecificDecode<'a, rustler::specific_transcode::target::Tuple> for #struct_typ {
             fn decode(term: rustler::NifTerm<'a>) -> Result<Self, rustler::NifError> {
                 let terms = try!(rustler::tuple::get_tuple(term));
                 if terms.len() != #field_num {
@@ -88,7 +88,7 @@ pub fn gen_encoder(struct_name: &Ident, fields: &Vec<Field>, is_tuple: bool, has
 
     // The implementation itself
     quote! {
-        impl<'b> rustler::NifEncoder for #struct_typ {
+        impl<'b> rustler::SpecificEncode<rustler::specific_transcode::target::Tuple> for #struct_typ {
             fn encode<'a>(&self, env: &'a rustler::NifEnv) -> rustler::NifTerm<'a> {
                 use rustler::NifEncoder;
                 let arr = #field_list_ast;

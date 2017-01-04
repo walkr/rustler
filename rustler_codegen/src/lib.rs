@@ -19,7 +19,6 @@ extern crate syntex_syntax as syntax;
 #[cfg(feature = "with-syntex")]
 use std::path::Path;
 
-//mod resource;
 mod util;
 mod tuple;
 mod map;
@@ -30,25 +29,8 @@ pub fn expand<S, D>(src: S, dst: D) -> Result<(), syntex::Error>
 {
     let mut reg = syntex::Registry::new();
 
-    reg.add_decorator("derive_NifMap", map_transcoder_decorator_shim);
-    reg.add_decorator("derive_NifTuple", tuple_transcoder_decorator_shim);
-
-    //reg.add_decorator("NifResource", resource::resource_struct_def_decorator);
-    //use syntax::ext::base::{TTMacroExpander, ExtCtxt, MacResult};
-    //use syntax::tokenstream::TokenTree;;
-    //use syntax::codemap::Span;
-
-    //struct ResourceStructInitMacroHack {}
-    //impl TTMacroExpander for ResourceStructInitMacroHack {
-    //    fn expand<'cx>(&self,
-    //                   ecx: &'cx mut ExtCtxt,
-    //                   span: Span,
-    //                   token_tree: &[TokenTree])
-    //        -> Box<MacResult+'cx> {
-    //            resource::resource_struct_init_macro(ecx, span, token_tree)
-    //        }
-    //}
-    //reg.add_macro("resource_struct_init", ResourceStructInitMacroHack {});
+    reg.add_decorator("derive_MapTermTarget", map_transcoder_decorator_shim);
+    reg.add_decorator("derive_TupleTermTarget", tuple_transcoder_decorator_shim);
 
     reg.expand("", src.as_ref(), dst.as_ref())
 }
@@ -100,14 +82,9 @@ shim_syn_decorator!(NifMap, map_transcoder_decorator_shim, map::transcoder_decor
 #[plugin_registrar]
 pub fn register(reg: &mut rustc_plugin::Registry) {
     reg.register_syntax_extension(
-        syntax::parse::token::intern("derive_NifMap"),
+        syntax::parse::token::intern("derive_MapTermTarget"),
         syntax::ext::base::MultiDecorator(Box::new(map_transcoder_decorator_shim)));
     reg.register_syntax_extension(
-        syntax::parse::token::intern("derive_NifTuple"),
+        syntax::parse::token::intern("derive_TupleTermTarget"),
         syntax::ext::base::MultiDecorator(Box::new(tuple_transcoder_decorator_shim)));
-
-    //reg.register_syntax_extension(
-    //    builder.name("NifResource"),
-    //    syntax::ext::base::MultiDecorator(Box::new(resource::resource_struct_def_decorator)));
-    //reg.register_macro("resource_struct_init", resource::resource_struct_init_macro);
 }

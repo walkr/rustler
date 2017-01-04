@@ -14,7 +14,7 @@ pub fn add_i32<'a>(env: &'a NifEnv, args: &Vec<NifTerm>) -> NifResult<NifTerm<'a
     Ok((lhs + rhs).encode(env))
 }
 
-#[derive(NifTuple)]
+#[derive(TupleTermTarget)]
 struct AddTuple {
     lhs: i32,
     rhs: i32,

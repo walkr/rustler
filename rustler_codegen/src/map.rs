@@ -51,7 +51,7 @@ pub fn gen_decoder(struct_name: &Ident, fields: &Vec<Field>, has_lifetime: bool)
     };
 
     quote! {
-        impl<'a> rustler::NifDecoder<'a> for #struct_type {
+        impl<'a> rustler::SpecificTranscode<'a, rustler::specific_transcode::target::Map> for #struct_type {
             fn decode(term: rustler::NifTerm<'a>) -> Result<Self, rustler::NifError> {
                 let env = term.get_env();
                 Ok(#struct_name { #(#field_defs),* })
@@ -80,10 +80,7 @@ pub fn gen_encoder(struct_name: &Ident, fields: &Vec<Field>, has_lifetime: bool)
     };
 
     quote! {
-        impl<'a> rustler::codegen_runtime::GeneratedNifTranscoder<'a, rustler::codegen_runtime::MapType> {
-
-        }
-        impl<'b> rustler::NifEncoder for #struct_type {
+        impl<'b> rustler::SpecificEncode<rustler::specific_transcode::target::Map> for #struct_type {
             fn encode<'a>(&self, env: &'a rustler::NifEnv) -> rustler::NifTerm<'a> {
                 let mut map = rustler::map::map_new(env);
                 #(field_defs)*
