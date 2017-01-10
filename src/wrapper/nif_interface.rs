@@ -203,6 +203,7 @@ pub use self::erlang_nif_sys::{
     enif_map_iterator_get_pair,
     enif_map_iterator_next,
     enif_self,
+    enif_snprintf,
 };
 
 // Scheduling

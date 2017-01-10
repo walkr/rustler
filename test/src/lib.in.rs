@@ -1,5 +1,8 @@
 use rustler::{NifEnv, NifTerm};
 
+mod test_term;
+use test_term::{term_debug};
+
 mod test_primitives;
 use test_primitives::{add_u32, add_i32, tuple_add, echo_u8};
 
@@ -26,7 +29,8 @@ use test_env::{send_all, sublists};
 
 rustler_export_nifs!(
     "Elixir.RustlerTest",
-    [("add_u32", 2, add_u32),
+    [("term_debug", 1, term_debug),
+     ("add_u32", 2, add_u32),
      ("add_i32", 2, add_i32),
      ("tuple_add", 1, tuple_add),
      ("echo_u8", 1, echo_u8),

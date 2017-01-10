@@ -14,6 +14,8 @@ defmodule RustlerTest do
     throw NifNotLoadedError
   end
 
+  def term_debug(_), do: err
+
   def add_u32(_, _), do: err
   def add_i32(_, _), do: err
   def tuple_add(_), do: err
