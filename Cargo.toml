@@ -9,3 +9,6 @@ license = "MIT/Apache-2.0"
 [dependencies]
 erlang_nif-sys = ">=0.5"
 lazy_static = "0.1.*"
+
+[features]
+erlang = []
